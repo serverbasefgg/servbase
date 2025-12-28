@@ -1399,6 +1399,67 @@
             </div>
         </div>
     </div>
+        <!-- МОДАЛКА ДЛЯ ВІДСТРОЧКИ -->
+    <div class="modal fade" id="defermentModal" tabindex="-1">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <form id="defermentForm">
+                    <div class="modal-header bg-info text-white">
+                        <h5 class="modal-title">
+                            <i class="bi bi-shield-check"></i> Подача заяви на відстрочку (бронювання)
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="defermentRecordId">
+
+                        <div class="text-center mb-4 bg-light p-3 rounded">
+                            <p class="mb-1"><strong>Особові дані:</strong></p>
+                            <p id="defermentFullName" class="fs-5 fw-bold mb-1"></p>
+                            <p id="defermentDob" class="text-muted small"></p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Підстава для відстрочки</label>
+                            <select class="form-select" id="defermentReason" required>
+                                <option value="">Оберіть підставу</option>
+                                <option value="critical_enterprise">Працівник підприємства критичної інфраструктури</option>
+                                <option value="defense_order">Виконання оборонного замовлення</option>
+                                <option value="it_specialist">IT-фахівець (заброньований)</option>
+                                <option value="education">Педагогічний працівник</option>
+                                <option value="healthcare">Медичний працівник</option>
+                                <option value="government">Державний службовець</option>
+                                <option value="other">Інша підстава</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="otherReasonGroup" style="display: none;">
+                            <label class="form-label">Опишіть іншу підставу</label>
+                            <input type="text" class="form-control" id="otherReason">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Термін відстрочки</label>
+                            <select class="form-select" id="defermentPeriodSelect" required>
+                                <option value="">Оберіть термін</option>
+                                <option value="6">6 місяців</option>
+                                <option value="12">12 місяців</option>
+                                <option value="permanent">Постійно (до скасування воєнного стану)</option>
+                            </select>
+                        </div>
+
+                        <div class="alert alert-info small">
+                            Статус стане <span class="badge bg-info">Відстрочка</span>. Інфо запишеться в примітки та журнал.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                        <button type="submit" class="btn btn-success">Подати заяву</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- Модальне вікно для користувача -->
     <div class="modal fade" id="userModal" tabindex="-1">
@@ -1720,31 +1781,41 @@
 
             // Рендер рядків таблиці
             pageItems.forEach(record => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${record.id}</td>
-                    <td>${record.lastName} ${record.firstName} ${record.middleName || ''}</td>
-                    <td>${record.dateOfBirth || '-'}</td>
-                    <td>${record.rank || '-'}</td>
-                    <td>${{soldier: 'Солдат', sergeant: 'Сержант', officer: 'Офіцер'}[record.category]}</td>
-                    <td><span class="badge bg-${
-    record.status === 'reserve' ? 'warning' :
-    record.status === 'wanted' ? 'danger' :
-    record.status === 'discharged' ? 'secondary' :
-    record.status === 'deferment' ? 'info' : 'dark'
-}">${
-    record.status === 'reserve' ? 'Резерв' :
-    record.status === 'wanted' ? 'Розшук' :
-    record.status === 'discharged' ? 'Звільнений' :
-    record.status === 'deferment' ? 'Відстрочка' : 'Відстрочка'
-}</span></td>
-                    <td>${new Date(record.updatedAt).toLocaleDateString('uk-UA')}</td>
-                    <td class="operator-only admin-only text-nowrap">
-                        <button class="btn btn-sm btn-outline-primary me-2 edit-record" data-id="${record.id}"><i class="bi bi-pencil"></i> Редагувати</button>
-                        <button class="btn btn-sm btn-outline-danger delete-record" data-id="${record.id}"><i class="bi bi-trash"></i> Видалити</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
+                    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td>${record.id}</td>
+        <td>${record.lastName} ${record.firstName} ${record.middleName || ''}</td>
+        <td>${record.dateOfBirth || '-'}</td>
+        <td>${record.rank || '-'}</td>
+        <td>${{soldier: 'Солдат', sergeant: 'Сержант', officer: 'Офіцер'}[record.category] || '-'}</td>
+        <td><span class="badge bg-${
+            record.status === 'deferment' ? 'info' :      // Відстрочка — синій
+            record.status === 'reserve' ? 'warning' :     // Резерв — жовтий
+            record.status === 'wanted' ? 'danger' :       // Розшук — червоний
+            record.status === 'discharged' ? 'secondary' : // Звільнений — сірий
+            'success'                                     // Активний — зелений
+        }">${
+            record.status === 'deferment' ? 'Відстрочка' :
+            record.status === 'reserve' ? 'Резерв' :
+            record.status === 'wanted' ? 'Розшук' :
+            record.status === 'discharged' ? 'Звільнений' :
+            'Активний'
+        }</span></td>
+        <td>${new Date(record.updatedAt).toLocaleDateString('uk-UA')}</td>
+        <td class="operator-only admin-only text-nowrap">
+            <button class="btn btn-sm btn-outline-primary me-2 edit-record" data-id="${record.id}">
+                <i class="bi bi-pencil"></i> Редагувати
+            </button>
+            <button class="btn btn-sm btn-outline-info me-2 deferment-record" data-id="${record.id}"
+                    ${record.status === 'deferment' ? 'disabled' : ''}>
+                <i class="bi bi-shield-check"></i> Відстрочка
+            </button>
+            <button class="btn btn-sm btn-outline-danger delete-record" data-id="${record.id}">
+                <i class="bi bi-trash"></i> Видалити
+            </button>
+        </td>
+    `;
+    tbody.appendChild(tr);
             });
 
             // Рендер пагінації
@@ -1843,6 +1914,32 @@
                     renderRecordsTable();
                     showToast('Запис видалено', 'info');
                 }
+            }
+                        if (e.target.closest('.deferment-record')) {
+                const button = e.target.closest('.deferment-record');
+                if (button.disabled) return;
+
+                const id = button.getAttribute('data-id');
+                const record = records.find(r => r.id == id);
+                if (!record) return;
+
+                // Заповнення модалки даними особи
+                document.getElementById('defermentRecordId').value = record.id;
+                document.getElementById('defermentFullName').textContent = 
+                    `${record.lastName} ${record.firstName} ${record.middleName || ''}`.trim();
+                document.getElementById('defermentDob').textContent = 
+                    record.dateOfBirth ? 
+                    `Дата народження: ${new Date(record.dateOfBirth).toLocaleDateString('uk-UA')}` : 
+                    'Дата народження не вказана';
+
+                // Скидання форми
+                document.getElementById('defermentReason').value = '';
+                document.getElementById('otherReasonGroup').style.display = 'none';
+                document.getElementById('otherReason').value = '';
+                document.getElementById('defermentPeriodSelect').value = '';
+
+                // Відкриття модалки
+                new bootstrap.Modal(document.getElementById('defermentModal')).show();
             }
         });
 
@@ -2055,6 +2152,67 @@ document.getElementById('wantedCheckForm').addEventListener('submit', function(e
         });
 
         // Ініціалізація
+                // Показ/приховання поля "інша підстава"
+        document.getElementById('defermentReason').addEventListener('change', function() {
+            const group = document.getElementById('otherReasonGroup');
+            if (this.value === 'other') {
+                group.style.display = 'block';
+                document.getElementById('otherReason').required = true;
+            } else {
+                group.style.display = 'none';
+                document.getElementById('otherReason').required = false;
+            }
+        });
+
+        // Обробка подачі заяви на відстрочку
+        document.getElementById('defermentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const recordId = parseInt(document.getElementById('defermentRecordId').value);
+            const record = records.find(r => r.id === recordId);
+            if (!record) return;
+
+            const reasonKey = document.getElementById('defermentReason').value;
+            const otherReason = document.getElementById('otherReason').value.trim();
+            const period = document.getElementById('defermentPeriodSelect').value;
+
+            const reasonsMap = {
+                critical_enterprise: 'Працівник підприємства критичної інфраструктури',
+                defense_order: 'Виконання оборонного замовлення',
+                it_specialist: 'IT-фахівець (заброньований)',
+                education: 'Педагогічний працівник',
+                healthcare: 'Медичний працівник',
+                government: 'Державний службовець',
+                other: otherReason ? `Інша підстава: ${otherReason}` : 'Інша підстава'
+            };
+
+            const periodMap = {
+                '6': '6 місяців',
+                '12': '12 місяців',
+                permanent: 'постійно (до скасування воєнного стану)'
+            };
+
+            const reasonText = reasonsMap[reasonKey] || 'невідома підстава';
+            const periodText = periodMap[period] || 'невідомий термін';
+
+            // Оновлення статусу та приміток
+            record.status = 'deferment';
+            const noteLine = `[ВІДСТРОЧКА ${new Date().toLocaleDateString('uk-UA')}] Підстава: ${reasonText}. Термін: ${periodText}.`;
+            record.notes = record.notes ? record.notes + '\n' + noteLine : noteLine;
+            record.updatedAt = new Date().toISOString();
+
+            // Логування
+            addLog(`Подано заяву на відстрочку для ${record.lastName} ${record.firstName}: ${reasonText}, термін ${periodText}`);
+
+            // Збереження та оновлення інтерфейсу
+            saveData();
+            renderRecordsTable();
+            updateDashboard();
+
+            // Закриття модалки та сповіщення
+            bootstrap.Modal.getInstance(document.getElementById('defermentModal')).hide();
+            showToast('Заяву на відстрочку успішно подано! Статус змінено.', 'success');
+        });
         loadData();
         currentUser = users[0]; // Авто-вхід як admin
         updateUIForRole();
@@ -2063,5 +2221,3 @@ document.getElementById('wantedCheckForm').addEventListener('submit', function(e
     </script>
 </body>
 </html>
-
-
