@@ -1073,8 +1073,43 @@
 </header>
 
     <!-- Бічна панель навігації -->
-    <nav id="sidebar">
-        <ul class="nav flex-column px-2">
+    <ul class="nav flex-column px-2">
+    <li class="nav-item">
+        <a class="nav-link active" href="#" data-page="dashboard">
+            <i class="bi bi-house-door-fill"></i> <span class="sidebar-text">Дашборд</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#" data-page="records">
+            <i class="bi bi-person-lines-fill"></i> <span class="sidebar-text">Облікові записи</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#" data-page="wantedCheck">
+            <i class="bi bi-search-heart"></i> <span class="sidebar-text">Перевірка на розшук</span>
+        </a>
+    </li>
+    <li class="nav-item operator-only admin-only">
+        <a class="nav-link" href="#" data-page="deferment">
+            <i class="bi bi-calendar-check"></i> <span class="sidebar-text">Подача на відстрочку</span>
+        </a>
+    </li>
+    <li class="nav-item admin-only">
+        <a class="nav-link" href="#" data-page="users">
+            <i class="bi bi-people-fill"></i> <span class="sidebar-text">Користувачі системи</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#" data-page="logs">
+            <i class="bi bi-journal-bookmark-fill"></i> <span class="sidebar-text">Журнал дій</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#" data-page="settings">
+            <i class="bi bi-gear-fill"></i> <span class="sidebar-text">Налаштування</span>
+        </a>
+    </li>
+</ul>
             <li class="nav-item">
                 <a class="nav-link active" href="#" data-page="dashboard">
                     <i class="bi bi-house-door-fill"></i> <span class="sidebar-text">Дашборд</span>
@@ -1264,6 +1299,41 @@
         </div>
     </div>
 </div>
+<!-- Подача на відстрочку -->
+<div id="defermentPage" class="d-none">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Подача на відстрочку</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#defermentModal" id="addDefermentBtn">
+            <i class="bi bi-plus-circle"></i> Подати нову відстрочку
+        </button>
+    </div>
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>ПІБ</th>
+                            <th>Дата народження</th>
+                            <th>Причина</th>
+                            <th>Статус</th>
+                            <th>Дата подачі</th>
+                            <th class="operator-only admin-only">Дії</th>
+                        </tr>
+                    </thead>
+                    <tbody id="defermentsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer d-flex justify-content-between align-items-center">
+            <small class="text-muted">Показано <span id="defermentPaginationInfo">0-0</span> з <span id="totalDefermentsCount">0</span> подань</small>
+            <nav>
+                <ul class="pagination pagination-sm mb-0" id="defermentPagination"></ul>
+            </nav>
+        </div>
+    </div>
+</div>
 
             <!-- Користувачі системи -->
             <div id="usersPage" class="d-none">
@@ -1441,6 +1511,63 @@
             </div>
         </div>
     </div>
+    <!-- ← ВСТАВЛЯЙ ТУТ НОВЕ МОДАЛЬНЕ ВІКНО -->
+<div class="modal fade" id="defermentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="defermentForm">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="defermentModalTitle">Подати на відстрочку</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="defermentId">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Прізвище</label>
+                            <input type="text" class="form-control" id="deferLastName" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Ім'я</label>
+                            <input type="text" class="form-control" id="deferFirstName" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">По батькові</label>
+                            <input type="text" class="form-control" id="deferMiddleName">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Дата народження</label>
+                            <input type="date" class="form-control" id="deferDateOfBirth" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Причина відстрочки</label>
+                            <select class="form-select" id="deferReason" required>
+                                <option value="">Оберіть причину</option>
+                                <option value="education">За навчанням</option>
+                                <option value="family">Сімейні обставини</option>
+                                <option value="health">Стан здоров'я</option>
+                                <option value="work">Критична робота</option>
+                                <option value="other">Інше</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Примітки / документи</label>
+                            <textarea class="form-control" id="deferNotes" rows="4" placeholder="Додаткова інформація, номери документів тощо"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                    <button type="submit" class="btn btn-primary">Подати заяву</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- ← кінець нового модального вікна -->
+
+<!-- Контейнер для тостів -->   <!-- ← цей коментар залишається після -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;"></div>
 
     <!-- Контейнер для тостів -->
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;"></div>
@@ -1598,7 +1725,11 @@
             if (page === 'users') renderUsersTable();
             if (page === 'logs') renderLogs();
             if (page === 'dashboard') updateDashboard();
-            if (page === 'wantedCheck') {
+            if (page === 'wantedCheck')
+            if (page === 'deferment') {
+    defermentsCurrentPage = 1;
+    renderDefermentsTable();
+} {
                 document.getElementById('wantedResult').classList.add('d-none');
             }
         }
@@ -1752,7 +1883,142 @@
 
             // Оновлення дашборду
             updateDashboard();
+        }   // ← це кінець renderRecordsTable()
+
+// ========================================
+// ФУНКЦІЯ ПОДАЧІ НА ВІДСТРОЧКУ
+// ========================================   // ← вставляй тут весь код нижче
+let deferments = [];
+let defermentsCurrentPage = 1;
+
+function loadDeferments() {
+    const saved = localStorage.getItem('demo_deferments');
+    deferments = saved ? JSON.parse(saved) : [];
+}
+
+function saveDeferments() {
+    localStorage.setItem('demo_deferments', JSON.stringify(deferments));
+}
+
+function renderDefermentsTable() {
+    const tbody = document.getElementById('defermentsTableBody');
+    tbody.innerHTML = '';
+    const total = deferments.length;
+    const start = (defermentsCurrentPage - 1) * recordsPerPage;
+    const end = Math.min(start + recordsPerPage, total);
+    const pageItems = deferments.slice(start, end);
+
+    document.getElementById('totalDefermentsCount').textContent = total;
+    document.getElementById('defermentPaginationInfo').textContent = total > 0 ? `${start + 1}-${end}` : '0-0';
+
+    pageItems.forEach(d => {
+        const tr = document.createElement('tr');
+        const reasonText = {
+            education: 'За навчанням',
+            family: 'Сімейні обставини',
+            health: 'Стан здоров\'я',
+            work: 'Критична робота',
+            other: 'Інше'
+        }[d.reason] || d.reason;
+
+        tr.innerHTML = `
+            <td>${d.id}</td>
+            <td>${d.lastName} ${d.firstName} ${d.middleName || ''}</td>
+            <td>${d.dateOfBirth ? new Date(d.dateOfBirth).toLocaleDateString('uk-UA') : '-'}</td>
+            <td>${reasonText}</td>
+            <td><span class="badge bg-warning">В обробці</span></td>
+            <td>${new Date(d.submittedAt).toLocaleDateString('uk-UA')}</td>
+            <td class="operator-only admin-only text-nowrap">
+                <button class="btn btn-sm btn-outline-primary me-2 edit-defer" data-id="${d.id}"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-sm btn-outline-danger delete-defer" data-id="${d.id}"><i class="bi bi-trash"></i></button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+    renderDefermentPagination(total);
+}
+
+function renderDefermentPagination(total) {
+    const container = document.getElementById('defermentPagination');
+    container.innerHTML = '';
+    const pages = Math.ceil(total / recordsPerPage);
+    if (pages <= 1) return;
+    for (let i = 1; i <= pages; i++) {
+        const li = document.createElement('li');
+        li.className = `page-item ${i === defermentsCurrentPage ? 'active' : ''}`;
+        li.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+        li.querySelector('a').addEventListener('click', e => {
+            e.preventDefault();
+            defermentsCurrentPage = i;
+            renderDefermentsTable();
+        });
+        container.appendChild(li);
+    }
+}
+
+// Форма подачі
+document.getElementById('defermentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const id = document.getElementById('defermentId').value;
+    const data = {
+        lastName: document.getElementById('deferLastName').value.trim(),
+        firstName: document.getElementById('deferFirstName').value.trim(),
+        middleName: document.getElementById('deferMiddleName').value.trim(),
+        dateOfBirth: document.getElementById('deferDateOfBirth').value,
+        reason: document.getElementById('deferReason').value,
+        notes: document.getElementById('deferNotes').value.trim(),
+        submittedAt: new Date().toISOString()
+    };
+
+    if (id) {
+        const index = deferments.findIndex(d => d.id == id);
+        data.id = parseInt(id);
+        deferments[index] = data;
+        addLog(`Редаговано заяву на відстрочку ID ${id}`);
+        showToast('Заяву відредаговано', 'success');
+    } else {
+        data.id = deferments.length ? Math.max(...deferments.map(d => d.id)) + 1 : 1;
+        deferments.push(data);
+        addLog(`Подана нова заява на відстрочку ID ${data.id}`);
+        showToast('Заяву подано успішно', 'success');
+    }
+    saveDeferments();
+    bootstrap.Modal.getInstance(document.getElementById('defermentModal')).hide();
+    renderDefermentsTable();
+    this.reset();
+    document.getElementById('defermentId').value = '';
+});
+
+// Редагування / видалення
+document.addEventListener('click', e => {
+    if (e.target.closest('.edit-defer')) {
+        const id = e.target.closest('.edit-defer').dataset.id;
+        const d = deferments.find(x => x.id == id);
+        if (d) {
+            document.getElementById('defermentModalTitle').textContent = 'Редагування заяви';
+            document.getElementById('defermentId').value = d.id;
+            document.getElementById('deferLastName').value = d.lastName;
+            document.getElementById('deferFirstName').value = d.firstName;
+            document.getElementById('deferMiddleName').value = d.middleName || '';
+            document.getElementById('deferDateOfBirth').value = d.dateOfBirth || '';
+            document.getElementById('deferReason').value = d.reason;
+            document.getElementById('deferNotes').value = d.notes || '';
+            new bootstrap.Modal(document.getElementById('defermentModal')).show();
         }
+    }
+    if (e.target.closest('.delete-defer')) {
+        if (confirm('Видалити цю заяву?')) {
+            const id = e.target.closest('.delete-defer').dataset.id;
+            deferments = deferments.filter(d => d.id != id);
+            saveDeferments();
+            renderDefermentsTable();
+            addLog(`Видалено заяву на відстрочку ID ${id}`);
+            showToast('Заяву видалено', 'info');
+        }
+    }
+});
+        
+        
 
         // Функція для рендеру пагінації
         function renderPagination(total, current) {
@@ -2056,11 +2322,13 @@ document.getElementById('wantedCheckForm').addEventListener('submit', function(e
 
         // Ініціалізація
         loadData();
-        currentUser = users[0]; // Авто-вхід як admin
+loadDeferments();   // ← Додаємо цей рядок
+currentUser = users[0]; // Авто-вхід як admin
         updateUIForRole();
         showPage('dashboard');
         updateDashboard();
     </script>
 </body>
 </html>
+
 
