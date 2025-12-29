@@ -1378,6 +1378,7 @@
                             <div class="col-md-6">
                                 <label class="form-label">Статус</label>
                                 <select class="form-select" id="status" required>
+                                    
     <option value="">Оберіть статус</option>
     <option value="reserve">Резерв</option>
     <option value="wanted">Розшук</option>
@@ -1440,6 +1441,53 @@
 
                         <div class="mb-3">
                             <label class="form-label">Термін відстрочки</label>
+                                                <!-- === НОВІ ПОЛЯ ПО ВІДСТРОЧЦІ === -->
+                    <div class="mb-3">
+                        <label class="form-label">Категорія обліку</label>
+                        <select class="form-select" id="deferCategory">
+                            <option value="">Оберіть</option>
+                            <option value="soldier">Солдат</option>
+                            <option value="sergeant">Звільнений</option>
+                            <option value="officer">Офіцер</option>
+                            <option value="reserve">Резервіст</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Звання</label>
+                        <input type="text" class="form-control" id="deferRank" placeholder="Напр.: рядовий">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">РНОКПП (ІПН)</label>
+                        <input type="text" class="form-control" id="deferRnokpp" maxlength="10" placeholder="10 цифр">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">ТЦК та СП</label>
+                        <input type="text" class="form-control" id="deferTck" placeholder="Напр.: Київський ТЦК">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Номер в реєстрі Оберіг</label>
+                        <input type="text" class="form-control" id="deferOberigNumber" placeholder="Напр.: OB-12345">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Дата ВЛК</label>
+                        <input type="date" class="form-control" id="deferVlkDate">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Дійсний до</label>
+                        <input type="date" class="form-control" id="deferValidUntil">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Адреса проживання</label>
+                        <textarea class="form-control" id="deferAddress" rows="2" placeholder="Повна адреса"></textarea>
+                    </div>
+                    <!-- === КІНЕЦЬ НОВИХ ПОЛЕЙ === -->
                             <select class="form-select" id="defermentPeriodSelect" required>
                                 <option value="">Оберіть термін</option>
                                 <option value="6">6 місяців</option>
@@ -1457,6 +1505,46 @@
                         <button type="submit" class="btn btn-success">Подати заяву</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+        <!-- МОДАЛКА ПЕРЕГЛЯДУ ПОВНОЇ ІНФОРМАЦІЇ ПРО ОСОБУ -->
+    <div class="modal fade" id="viewRecordModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-person-badge"></i> Повна картка особи
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Основна інформація</h6>
+                            <p><strong>ПІБ:</strong> <span id="viewFullName" class="fw-bold fs-5"></span></p>
+                            <p><strong>Дата народження:</strong> <span id="viewDob"></span></p>
+                            <p><strong>Статус:</strong> <span id="viewStatusBadge"></span></p>
+                            <p><strong>Звання:</strong> <span id="viewRank"></span></p>
+                            <p><strong>Категорія обліку:</strong> <span id="viewCategory"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Дані обліку та відстрочки</h6>
+                            <p><strong>РНОКПП (ІПН):</strong> <span id="viewRnokpp"></span></p>
+                            <p><strong>ТЦК та СП:</strong> <span id="viewTck"></span></p>
+                            <p><strong>Номер в реєстрі Оберіг:</strong> <span id="viewOberigNumber"></span></p>
+                            <p><strong>Дата ВЛК:</strong> <span id="viewVlkDate"></span></p>
+                            <p><strong>Дійсний до:</strong> <span id="viewValidUntil"></span></p>
+                            <p><strong>Адреса проживання:</strong> <span id="viewAddress" class="text-break"></span></p>
+                        </div>
+                    </div>
+                    <hr>
+                    <h6 class="text-primary">Примітки та історія</h6>
+                    <pre class="bg-light p-3 rounded small" id="viewNotes" style="white-space: pre-wrap; max-height: 200px; overflow-y: auto;">Немає приміток</pre>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1937,9 +2025,64 @@
                 document.getElementById('otherReasonGroup').style.display = 'none';
                 document.getElementById('otherReason').value = '';
                 document.getElementById('defermentPeriodSelect').value = '';
+                                // === ОЧИЩЕННЯ НОВИХ ПОЛЕЙ ===
+                document.getElementById('deferCategory').value = '';
+                document.getElementById('deferRank').value = '';
+                document.getElementById('deferRnokpp').value = '';
+                document.getElementById('deferTck').value = '';
+                document.getElementById('deferOberigNumber').value = '';
+                document.getElementById('deferVlkDate').value = '';
+                document.getElementById('deferValidUntil').value = '';
+                document.getElementById('deferAddress').value = '';
+                // ===
 
                 // Відкриття модалки
                 new bootstrap.Modal(document.getElementById('defermentModal')).show();
+            }
+                        // Клік по рядку в таблиці — відкрити перегляд повної інформації
+            if (e.target.closest('#recordsTableBody tr') && !e.target.closest('button')) {
+                const tr = e.target.closest('tr');
+                const id = tr.querySelector('[data-id]').getAttribute('data-id');
+                const record = records.find(r => r.id == parseInt(id));
+
+                if (record) {
+                    // Основні дані
+                    document.getElementById('viewFullName').textContent = 
+                        `${record.lastName} ${record.firstName} ${record.middleName || ''}`.trim();
+
+                    document.getElementById('viewDob').textContent = 
+                        record.dateOfBirth ? new Date(record.dateOfBirth).toLocaleDateString('uk-UA') : '-';
+
+                    // Статус з бейджем
+                    const statusMap = {
+                        active: {text: 'Активний', color: 'success'},
+                        reserve: {text: 'Резерв', color: 'warning'},
+                        wanted: {text: 'Розшук', color: 'danger'},
+                        discharged: {text: 'Звільнений', color: 'secondary'},
+                        deferment: {text: 'Відстрочка', color: 'info'}
+                    };
+                    const st = statusMap[record.status] || {text: 'Невідомо', color: 'dark'};
+                    document.getElementById('viewStatusBadge').innerHTML = 
+                        `<span class="badge bg-${st.color}">${st.text}</span>`;
+
+                    // Всі нові поля
+                    document.getElementById('viewRank').textContent = record.rank || '-';
+                    document.getElementById('viewCategory').textContent = record.category || '-';
+                    document.getElementById('viewRnokpp').textContent = record.rnokpp || '-';
+                    document.getElementById('viewTck').textContent = record.tck || '-';
+                    document.getElementById('viewOberigNumber').textContent = record.oberigNumber || '-';
+                    document.getElementById('viewVlkDate').textContent = 
+                        record.vlkDate ? new Date(record.vlkDate).toLocaleDateString('uk-UA') : '-';
+                    document.getElementById('viewValidUntil').textContent = 
+                        record.validUntil ? new Date(record.validUntil).toLocaleDateString('uk-UA') : '-';
+                    document.getElementById('viewAddress').textContent = record.address || '-';
+
+                    // Примітки
+                    document.getElementById('viewNotes').textContent = record.notes || 'Немає приміток';
+
+                    // Відкриваємо модалку
+                    new bootstrap.Modal(document.getElementById('viewRecordModal')).show();
+                }
             }
         });
 
@@ -2197,8 +2340,17 @@ document.getElementById('wantedCheckForm').addEventListener('submit', function(e
 
             // Оновлення статусу та приміток
             record.status = 'deferment';
-            const noteLine = `[ВІДСТРОЧКА ${new Date().toLocaleDateString('uk-UA')}] Підстава: ${reasonText}. Термін: ${periodText}.`;
-            record.notes = record.notes ? record.notes + '\n' + noteLine : noteLine;
+                        const noteLine = `[ВІДСТРОЧКА ${new Date().toLocaleDateString('uk-UA')}] Підстава: ${reasonText}. Термін: ${periodText}. Категорія: ${record.category}. Звання: ${record.rank}. РНОКПП: ${record.rnokpp}. ТЦК: ${record.tck}. Оберіг: ${record.oberigNumber}. ВЛК: ${record.vlkDate}. Дійсний до: ${record.validUntil}. Адреса: ${record.address}.`;
+            record.notes =             // === ЗБЕРЕЖЕННЯ НОВИХ ПОЛЕЙ ===
+            record.category = document.getElementById('deferCategory').value;
+            record.rank = document.getElementById('deferRank').value.trim();
+            record.rnokpp = document.getElementById('deferRnokpp').value.trim();
+            record.tck = document.getElementById('deferTck').value.trim();
+            record.oberigNumber = document.getElementById('deferOberigNumber').value.trim();
+            record.vlkDate = document.getElementById('deferVlkDate').value;
+            record.validUntil = document.getElementById('deferValidUntil').value;
+            record.address = document.getElementById('deferAddress').value.trim();
+            // === record.notes ? record.notes + '\n' + noteLine : noteLine;
             record.updatedAt = new Date().toISOString();
 
             // Логування
